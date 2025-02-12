@@ -1,0 +1,248 @@
+body {
+    font-family: Calibri, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+.controls {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #e9ecef;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 550px;
+}
+.chord-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #e9ecef;
+    border-radius: 8px;
+    height: 550px;
+}
+button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    background: #48A69D;
+    color: white;
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+button:hover {
+    background: #32887f;
+}
+#transitions {
+    margin-top: 1rem;
+}
+.transition {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+}
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+}
+
+.volume-control label {
+    min-width: 80px;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+    min-width: 100px;
+    max-width: 150px;
+}
+
+.volume-control span {
+    min-width: 60px;
+}
+.circle-of-fifths {
+    margin-top: 1rem;
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+.center-chord {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #48A69D;
+}
+.chord-node {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.chord-node.active {
+    background: #48A69D;
+    color: white;
+}
+.chord-node.minor {
+    font-size: 0.9em;
+    width: 35px;
+    height: 35px;
+    background: #e0e0e0;
+}
+.chord-node.minor.active {
+    background: #48A69D;
+    color: white;
+}
+.container {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.circle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #48A69D;
+    border-radius: 50%;
+    cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #48A69D;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+input[type="range"]::-moz-range-progress {
+    background: #48A69D;
+    height: 8px;
+    border-radius: 4px;
+}
+.header {
+    text-align: center;
+    color: #48A69D;
+    padding: 2rem 0;
+    margin-bottom: 1rem;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+.chord-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #48A69D;
+    font-size: 1rem;
+    color: #48A69D;
+    background-color: white;
+    cursor: pointer;
+}
+
+select:hover {
+    border-color: #32887f;
+    color: #32887f;
+}
+
+select:focus {
+    outline: none;
+    border-color: #32887f;
+    box-shadow: 0 0 0 2px rgba(72, 166, 157, 0.2);
+}
+
+select option:checked {
+    background-color: #48A69D;
+    color: white;
+}
+
+select option:hover {
+    background-color: #48A69D;
+    color: white;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #48A69D;
+    border-radius: 4px;
+    margin-right: 8px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #48A69D;
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+}
+
+input[type="checkbox"]:hover {
+    border-color: #32887f;
+}
+
+input[type="checkbox"]:checked:hover {
+    background-color: #32887f;
+}
+.project-description {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #e9ecef;
+    border-radius: 8px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.project-description h3 {
+    color: #48A69D;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.project-description p {
+    margin: 0.8rem 0;
+    color: #333;
+}
