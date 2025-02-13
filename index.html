@@ -42,14 +42,14 @@
                 <span id="tempoValue">30 BPM</span>
             </div>
             <div class="volume-control">
+                <label for="octaveSlider">Octave:</label>
+                <input type="range" id="octaveSlider" min="-2" max="2" value="0" step="1">
+                <span id="octaveValue">0</span>
+            </div>
+            <div class="volume-control">
                 <label for="lowpassSlider">Lowpass:</label>
                 <input type="range" id="lowpassSlider" min="20" max="20000" value="20000" step="1">
                 <span id="lowpassValue">20000 Hz</span>
-            </div>
-            <div class="volume-control">
-                <label for="highpassSlider">Highpass:</label>
-                <input type="range" id="highpassSlider" min="20" max="20000" value="20" step="1">
-                <span id="highpassValue">20 Hz</span>
             </div>
             <div class="volume-control">
                 <label for="reverbSlider">Reverb:</label>
@@ -76,8 +76,8 @@
                     Major chords are shown in the outer ring, with their relative minors in the inner ring.
                 </p>
                 <p>
-                    Use the controls on the left to adjust the sound and tempo, and experiment with effects like 
-                    reverb, delay, and filters. Toggle arpeggio mode to hear the chords played as sequential notes 
+                    Use the controls on the left to adjust the sound, tempo, and octave. Experiment with effects like 
+                    reverb, delay, and lowpass filter. Toggle arpeggio mode to hear the chords played as sequential notes 
                     rather than simultaneously.
                 </p>
                 <p>

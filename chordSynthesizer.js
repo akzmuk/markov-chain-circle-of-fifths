@@ -15,6 +15,7 @@ class ChordSynthesizer {
         this.delayNode = null;
         this.delayFeedback = null;
         this.delayWet = null;
+        this.octaveShift = 0;
         
         this.CHORDS = {
             'C': 261.63,   // C4
@@ -117,27 +118,9 @@ class ChordSynthesizer {
         });
 
         const lowpassSlider = document.getElementById('lowpassSlider');
-        const highpassSlider = document.getElementById('highpassSlider');
-
-        const updateFilter = (slider, valueId, filterNode, type) => {
-            const minValue = Math.log(20);
-            const maxValue = Math.log(20000);
-            const scale = (maxValue - minValue) / (slider.max - slider.min);
-            const value = Math.exp(minValue + scale * (slider.value - slider.min));
-            const roundedValue = Math.round(value);
-            
-            document.getElementById(valueId).textContent = `${roundedValue} Hz`;
-            if (filterNode) {
-                filterNode.frequency.setValueAtTime(roundedValue, this.audioContext?.currentTime || 0);
-            }
-        };
-
-        lowpassSlider.addEventListener('input', () => {
-            updateFilter(lowpassSlider, 'lowpassValue', this.lowpassNode);
-        });
-
-        highpassSlider.addEventListener('input', () => {
-            updateFilter(highpassSlider, 'highpassValue', this.highpassNode);
+        lowpassSlider.addEventListener('input', (e) => {
+            this.lowpassFilter.frequency.value = e.target.value;
+            document.getElementById('lowpassValue').textContent = `${e.target.value} Hz`;
         });
 
         const arpeggioToggle = document.getElementById('arpeggioToggle');
@@ -164,6 +147,12 @@ class ChordSynthesizer {
             if (this.delayWet) {
                 this.delayWet.gain.setValueAtTime(delayMix, this.audioContext?.currentTime || 0);
             }
+        });
+
+        const octaveSlider = document.getElementById('octaveSlider');
+        octaveSlider.addEventListener('input', (e) => {
+            this.octaveShift = parseInt(e.target.value);
+            document.getElementById('octaveValue').textContent = `${this.octaveShift >= 0 ? '+' : ''}${this.octaveShift}`;
         });
     }
 
@@ -295,25 +284,9 @@ class ChordSynthesizer {
         this.wetGainNode.gain.value = reverbValue;
         this.delayWet.gain.value = delayValue;
         
-        this.dryGainNode.connect(this.audioContext.destination);
-        this.wetGainNode.connect(this.reverbNode);
-        this.reverbNode.connect(this.audioContext.destination);
-        this.delayWet.connect(this.audioContext.destination);
-        
-        const lowpassValue = document.getElementById('lowpassSlider').value;
-        const highpassValue = document.getElementById('highpassSlider').value;
-        
-        if (!this.lowpassNode) {
-            this.lowpassNode = this.audioContext.createBiquadFilter();
-            this.lowpassNode.type = 'lowpass';
-            this.lowpassNode.frequency.setValueAtTime(lowpassValue, this.audioContext.currentTime);
-        }
-        
-        if (!this.highpassNode) {
-            this.highpassNode = this.audioContext.createBiquadFilter();
-            this.highpassNode.type = 'highpass';
-            this.highpassNode.frequency.setValueAtTime(highpassValue, this.audioContext.currentTime);
-        }
+        this.lowpassFilter = this.audioContext.createBiquadFilter();
+        this.lowpassFilter.type = 'lowpass';
+        this.lowpassFilter.frequency.value = 20000;
         
         this.tempo = parseInt(document.getElementById('tempoSlider').value);
         
@@ -359,32 +332,17 @@ class ChordSynthesizer {
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
         
-        if (!this.lowpassNode) {
-            this.lowpassNode = this.audioContext.createBiquadFilter();
-            this.lowpassNode.type = 'lowpass';
-            this.lowpassNode.frequency.setValueAtTime(20000, this.audioContext.currentTime);
-            this.lowpassNode.Q.setValueAtTime(1, this.audioContext.currentTime);
-        }
+        const adjustedFrequency = frequency * Math.pow(2, this.octaveShift);
+        oscillator.frequency.value = adjustedFrequency;
         
-        if (!this.highpassNode) {
-            this.highpassNode = this.audioContext.createBiquadFilter();
-            this.highpassNode.type = 'highpass';
-            this.highpassNode.frequency.setValueAtTime(20, this.audioContext.currentTime);
-            this.highpassNode.Q.setValueAtTime(1, this.audioContext.currentTime);
-        }
-
         oscillator.type = this.waveform;
-        oscillator.frequency.value = frequency;
         
         gainNode.gain.setValueAtTime(0, startTime);
         gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.1);
         gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
         
         oscillator.connect(gainNode);
-        gainNode.connect(this.highpassNode);
-        this.highpassNode.connect(this.lowpassNode);
-        
-        this.lowpassNode.connect(this.masterGainNode);
+        this.masterGainNode.connect(gainNode);
         this.masterGainNode.connect(this.dryGainNode);
         this.masterGainNode.connect(this.wetGainNode);
         this.masterGainNode.connect(this.delayNode);
