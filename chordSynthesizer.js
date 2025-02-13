@@ -342,10 +342,15 @@ class ChordSynthesizer {
         gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
         
         oscillator.connect(gainNode);
-        this.masterGainNode.connect(gainNode);
-        this.masterGainNode.connect(this.dryGainNode);
-        this.masterGainNode.connect(this.wetGainNode);
-        this.masterGainNode.connect(this.delayNode);
+        gainNode.connect(this.lowpassFilter);
+        this.lowpassFilter.connect(this.dryGainNode);
+        this.lowpassFilter.connect(this.wetGainNode);
+        this.lowpassFilter.connect(this.delayNode);
+        
+        this.dryGainNode.connect(this.audioContext.destination);
+        this.wetGainNode.connect(this.reverbNode);
+        this.reverbNode.connect(this.audioContext.destination);
+        this.delayWet.connect(this.audioContext.destination);
         
         return oscillator;
     }
