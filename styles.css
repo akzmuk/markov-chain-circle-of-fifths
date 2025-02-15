@@ -9,14 +9,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    height: 550px;
+    height: 750px;
 }
 .chord-info {
     margin-top: 1rem;
     padding: 1rem;
     background: #e9ecef;
     border-radius: 8px;
-    height: 550px;
+    height: 750px;
+    overflow-y: auto;
 }
 button {
     padding: 0.5rem 1rem;
@@ -245,4 +246,91 @@ input[type="checkbox"]:checked:hover {
 .project-description p {
     margin: 0.8rem 0;
     color: #333;
+}
+
+.custom-progression {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+}
+
+.custom-progression input[type="text"] {
+    padding: 0.5rem;
+    border: 1px solid #48A69D;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.custom-progression .helper-text {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.custom-progression button {
+    align-self: flex-start;
+}
+
+.progression-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.progression-section input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.progression-section input[type="text"]:focus {
+    outline: none;
+    border-color: #48A69D;
+}
+
+.progression-section .control-group {
+    margin-bottom: 15px;
+}
+
+.progression-section label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.progression-section input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+#applyProgressionBtn {
+    width: 100%;
+    padding: 12px;
+    background: #48A69D;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#applyProgressionBtn:hover {
+    background: #3d8f87;
+}
+
+#applyProgressionBtn:active {
+    background: #357f78;
 }

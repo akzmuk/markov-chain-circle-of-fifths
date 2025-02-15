@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Markov Chain Chord Progression Generation Stream</title>
+    <title>MCCPGS</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,400,0,0&icon_names=radio" />
+    <style>
+        h1 {
+            display: inline-flex;
+            align-items: center;
+        }
+        .material-symbols-outlined {
+            font-size: 40px;
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-        <h1>Markov Chain Chord Progression Generation Stream</h1>
+        <h1>
+            Markov Chain Chord Progression Generation Stream 
+            <span class="material-symbols-outlined">radio</span>
+        </h1>
     </div>
     <div class="container">
         <div class="controls">
-            <button id="startBtn">Start</button>
+            <h3 style="margin-bottom: 10px;">Audio Controls:</h3>
+            <button id="startBtn">Start</button>            
             <div class="chord-selector">
                 <label for="startingChord">Starting Chord:</label>
                 <select id="startingChord">
@@ -71,12 +86,16 @@
             <div class="project-description">
                 <h3>About This Project</h3>
                 <p>
-                    This is a generative music tool that creates endless chord progression using Markov chain based on simple circle of fifths relations. 
+                    This is a generative music tool that creates endless chord progressions using Markov chain, which is based on simple circle of fifths relations. 
+                    Alternatively, you can input your own chord progression to generate endless variations of it.
+                    The generated progressions are then played through a simple synthesizer.                                                
+                </p>
+                <p>
                     The circle visualization shows the current chord (highlighted) and its position in the circle of fifths. 
                     Major chords are shown in the outer ring, with their relative minors in the inner ring.
                 </p>
                 <p>
-                    Use the controls on the left to adjust the sound, tempo, and octave. Experiment with effects like 
+                    The tempo, octave, and waveform can be adjusted to your liking. Experiment with effects like 
                     reverb, delay, and lowpass filter. Toggle arpeggio mode to hear the chords played as sequential notes 
                     rather than simultaneously.
                 </p>
@@ -88,6 +107,19 @@
         <div>
             <div class="chord-info">
                 <h3>Current Chord: <span id="currentChord">C</span></h3>
+                <div class="progression-section">
+                    <h5>Custom Chord Progression</h5>
+                    <div class="control-group">
+                        <input type="text" id="progressionInput" placeholder="C G Am F">
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="strictProgressionToggle">
+                            Only use input chords
+                        </label>
+                    </div>
+                    <button id="applyProgressionBtn">Apply</button>
+                </div>
                 <div id="transitions"></div>
             </div>
         </div>
