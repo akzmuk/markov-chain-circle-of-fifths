@@ -67,14 +67,8 @@ button:hover {
 .volume-control span {
     min-width: 60px;
 }
-.circle-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 2rem 0;
-    width: 100%;
-}
 .circle-of-fifths {
+    margin-top: 1rem;
     position: relative;
     width: min(90vw, 300px);
     height: min(90vw, 300px);
@@ -405,26 +399,8 @@ input[type="checkbox"]:checked:hover {
     }
 
     .circle-of-fifths {
-        width: 90vw;  /* Larger size on mobile */
-        height: 90vw;
-        transform: scale(1);  /* Remove previous scaling */
-        margin: 2rem auto;
-    }
-
-    .chord-node {
-        width: 15vw;  /* Larger nodes */
-        height: 15vw;
-        font-size: clamp(1rem, 3vw, 1.2rem);
-    }
-
-    .chord-node.minor {
-        width: 13vw;
-        height: 13vw;
-        font-size: clamp(0.9rem, 2.7vw, 1.1rem);
-    }
-
-    .center-chord {
-        font-size: clamp(1.5rem, 4vw, 2rem);
+        transform: scale(0.7);
+        margin: -45px auto;
     }
 
     .project-description {
@@ -439,6 +415,10 @@ input[type="checkbox"]:checked:hover {
     #applyProgressionBtn {
         padding: 8px;
     }
+
+    .chord-node {
+        font-size: 0.9em;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -446,26 +426,9 @@ input[type="checkbox"]:checked:hover {
         font-size: 1.5rem;
     }
 
-    .circle-container {
-        margin: 1rem 0;
-    }
-
     .circle-of-fifths {
-        width: 95vw;  /* Even larger on smaller phones */
-        height: 95vw;
-        transform: scale(1);
-    }
-
-    .chord-node {
-        width: 16vw;
-        height: 16vw;
-        font-size: clamp(1rem, 3.2vw, 1.3rem);
-    }
-
-    .chord-node.minor {
-        width: 14vw;
-        height: 14vw;
-        font-size: clamp(0.9rem, 2.9vw, 1.2rem);
+        transform: scale(0.6);
+        margin: -60px auto;
     }
 
     .controls button, 
