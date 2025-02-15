@@ -1,27 +1,32 @@
 body {
     font-family: Calibri, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-size: 16px; /* Base font size */
 }
 .controls {
     margin: 1rem 0;
-    padding: 1rem;
+    padding: min(2vw, 1rem);
     background: #e9ecef;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    height: 750px;
+    height: min(90vh, 750px);
+    overflow-y: auto;
 }
 .chord-info {
     margin-top: 1rem;
-    padding: 1rem;
+    padding: min(2vw, 1rem);
     background: #e9ecef;
     border-radius: 8px;
-    height: 750px;
+    height: min(90vh, 750px);
     overflow-y: auto;
 }
 button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
+    padding: clamp(0.5rem, 1.5vw, 1rem);
+    font-size: clamp(0.9rem, 2vw, 1rem);
     border: none;
     border-radius: 4px;
     background: #48A69D;
@@ -56,6 +61,7 @@ button:hover {
     flex: 1;
     min-width: 100px;
     max-width: 150px;
+    width: clamp(150px, 30vw, 300px);
 }
 
 .volume-control span {
@@ -64,22 +70,23 @@ button:hover {
 .circle-of-fifths {
     margin-top: 1rem;
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: min(90vw, 300px);
+    height: min(90vw, 300px);
+    margin: 0 auto;
 }
 .center-chord {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 24px;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
     font-weight: bold;
     color: #48A69D;
 }
 .chord-node {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: min(12vw, 40px);
+    height: min(12vw, 40px);
     border-radius: 50%;
     background: #ddd;
     display: flex;
@@ -87,16 +94,17 @@ button:hover {
     justify-content: center;
     font-weight: bold;
     transition: background-color 0.3s;
+    font-size: clamp(0.8rem, 2vw, 1rem);
 }
 .chord-node.active {
     background: #48A69D;
     color: white;
 }
 .chord-node.minor {
-    font-size: 0.9em;
-    width: 35px;
-    height: 35px;
+    width: min(10vw, 35px);
+    height: min(10vw, 35px);
     background: #e0e0e0;
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
 }
 .chord-node.minor.active {
     background: #48A69D;
@@ -104,10 +112,10 @@ button:hover {
 }
 .container {
     display: grid;
-    grid-template-columns: 300px 1fr 300px;
-    gap: 2rem;
-    align-items: start;
-    max-width: 1200px;
+    grid-template-columns: minmax(300px, 1fr) minmax(400px, 2fr) minmax(300px, 1fr);
+    gap: min(2vw, 2rem);
+    width: 95%;
+    max-width: 1800px; /* Increased max-width for larger screens */
     margin: 0 auto;
     padding: 1rem;
 }
@@ -149,13 +157,13 @@ input[type="range"]::-moz-range-progress {
 .header {
     text-align: center;
     color: #48A69D;
-    padding: 2rem 0;
-    margin-bottom: 1rem;
+    padding: 2vh 0;
+    margin-bottom: 1vh;
 }
 
 .header h1 {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem); /* Responsive font size */
 }
 .chord-selector {
     display: flex;
@@ -229,12 +237,13 @@ input[type="checkbox"]:checked:hover {
     background-color: #32887f;
 }
 .project-description {
-    margin: 2rem 0;
-    padding: 1.5rem;
+    margin: 2vh 0;
+    padding: min(2vw, 1.5rem);
     background: #e9ecef;
     border-radius: 8px;
     line-height: 1.6;
     text-align: justify;
+    font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .project-description h3 {
@@ -333,4 +342,155 @@ input[type="checkbox"]:checked:hover {
 
 #applyProgressionBtn:active {
     background: #357f78;
+}
+
+/* Update media queries */
+@media screen and (min-width: 1800px) {
+    .container {
+        gap: 3rem;
+    }
+    
+    .controls, .chord-info {
+        padding: 2rem;
+    }
+    
+    .circle-of-fifths {
+        transform: scale(1.2);
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .circle-of-fifths {
+        width: min(80vw, 300px);
+        height: min(80vw, 300px);
+        margin: 2rem auto;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    .controls, .chord-info {
+        margin: 0.5rem 0;
+        padding: 1rem;
+        height: auto;
+    }
+
+    .volume-control, .chord-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    input[type="range"] {
+        width: 100%;
+    }
+
+    select, button {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .circle-of-fifths {
+        transform: scale(0.7);
+        margin: -45px auto;
+    }
+
+    .project-description {
+        margin: 1rem 0;
+        padding: 1rem;
+    }
+
+    .progression-section input[type="text"] {
+        padding: 8px;
+    }
+
+    #applyProgressionBtn {
+        padding: 8px;
+    }
+
+    .chord-node {
+        font-size: 0.9em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .circle-of-fifths {
+        transform: scale(0.6);
+        margin: -60px auto;
+    }
+
+    .controls button, 
+    .controls select {
+        width: 100%;
+    }
+
+    .volume-control span {
+        font-size: 0.9em;
+    }
+}
+
+/* Add these utility classes */
+.text-center {
+    text-align: center;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* Improve touch targets while maintaining scalability */
+@media (hover: none) and (pointer: coarse) {
+    button, 
+    select, 
+    input[type="checkbox"],
+    .chord-node {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    input[type="range"] {
+        height: 44px;
+    }
+}
+
+/* Ensure smooth scaling of text */
+* {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add fluid spacing utilities */
+.mt-fluid {
+    margin-top: clamp(1rem, 2vw, 2rem);
+}
+
+.mb-fluid {
+    margin-bottom: clamp(1rem, 2vw, 2rem);
+}
+
+.p-fluid {
+    padding: clamp(0.5rem, 1vw, 1rem);
+}
+
+/* Fix for iOS input styling */
+input, 
+select, 
+button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 4px;
 }
