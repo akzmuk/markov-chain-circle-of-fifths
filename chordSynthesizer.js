@@ -95,17 +95,6 @@ class ChordSynthesizer {
             }
         });
         
-        const volumeSlider = document.getElementById('volumeSlider');
-        volumeSlider.addEventListener('input', (e) => {
-            const volume = e.target.value / 100;
-            document.getElementById('volumeValue').textContent = `${e.target.value}%`;
-            if (this.masterGainNode) {
-                this.masterGainNode.gain.setValueAtTime(volume, this.audioContext?.currentTime || 0);
-            }
-        });
-
-        document.getElementById('volumeValue').textContent = `${volumeSlider.value}%`;
-
         const tempoSlider = document.getElementById('tempoSlider');
         tempoSlider.value = "30";
         document.getElementById('tempoValue').textContent = "30 BPM";
@@ -294,8 +283,7 @@ class ChordSynthesizer {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
         this.masterGainNode = this.audioContext.createGain();
-        const volume = document.getElementById('volumeSlider').value / 100;
-        this.masterGainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
+        this.masterGainNode.gain.setValueAtTime(1.0, this.audioContext.currentTime);
         
         const delayNetwork = this.createDelay();
         this.delayNode = delayNetwork.delay;
@@ -411,48 +399,46 @@ class ChordSynthesizer {
     }
 
     getNextChord() {
-        console.log('Getting next chord from:', this.currentChord);
-        console.log('Custom transitions:', this.customTransitions);
-        console.log('Strict mode:', this.strictProgressionMode);
+        console.log("%cCurrent chord:", "color: blue; font-weight: bold", this.currentChord);
         
-        // If strict mode and we have progression chords
-        if (this.strictProgressionMode && this.progressionChords) {
-            const currentIndex = this.progressionChords.indexOf(this.currentChord);
-            if (currentIndex !== -1 && currentIndex < this.progressionChords.length - 1) {
-                // Return next chord in progression
-                return this.progressionChords[currentIndex + 1];
-            } else {
-                // Return to first chord if at end
-                return this.progressionChords[0];
-            }
-        }
-        
-        // If we have custom transitions (not strict mode)
-        if (this.customTransitions && this.currentChord && this.customTransitions[this.currentChord]) {
+        // If we have custom transitions and current chord has defined transitions
+        if (this.customTransitions && this.customTransitions[this.currentChord]) {
             const transitions = this.customTransitions[this.currentChord];
-            if (Object.keys(transitions).length > 0) {
-                const chords = Object.keys(transitions);
-                const randomIndex = Math.floor(Math.random() * chords.length);
-                return chords[randomIndex];
+            const random = Math.random();
+            let sum = 0;
+            
+            for (const [nextChord, probability] of Object.entries(transitions)) {
+                sum += probability;
+                if (random < sum) {
+                    console.log(`Using custom transition to ${nextChord}`);
+                    return nextChord;
+                }
             }
         }
         
-        // Default transitions
-        const defaultTransitions = ChordSynthesizer.DEFAULT_TRANSITIONS[this.currentChord];
-        const chords = Object.keys(defaultTransitions);
-        const probabilities = Object.values(defaultTransitions);
-        
-        const random = Math.random();
-        let sum = 0;
-        
-        for (let i = 0; i < chords.length; i++) {
-            sum += probabilities[i];
-            if (random < sum) {
-                return chords[i];
+        // If we reached a chord with no custom transitions defined
+        if (this.strictProgressionMode && this.progressionChords) {
+            // In strict mode, cycle back to the first chord
+            console.log("Strict mode: cycling back to first chord");
+            return this.progressionChords[0];
+        } else {
+            // In non-strict mode, use default transitions
+            console.log("Using default transitions");
+            const defaultTransitions = this.TRANSITIONS[this.currentChord];
+            const random = Math.random();
+            let sum = 0;
+            
+            for (const [nextChord, probability] of Object.entries(defaultTransitions)) {
+                sum += probability;
+                if (random < sum) {
+                    console.log(`Using default transition to ${nextChord}`);
+                    return nextChord;
+                }
             }
+            
+            // Fallback to first default transition
+            return Object.keys(defaultTransitions)[0];
         }
-        
-        return chords[0];
     }
 
     updateUI() {
@@ -465,7 +451,7 @@ class ChordSynthesizer {
         // Use the same logic as getNextChord to determine which transitions to show
         const currentTransitions = (this.customTransitions && this.customTransitions[this.currentChord])
             ? this.customTransitions[this.currentChord]
-            : ChordSynthesizer.DEFAULT_TRANSITIONS[this.currentChord];
+            : this.TRANSITIONS[this.currentChord];
         
         Object.entries(currentTransitions).forEach(([chord, prob]) => {
             const div = document.createElement('div');
@@ -500,71 +486,36 @@ class ChordSynthesizer {
     static generateTransitionMatrix(progression) {
         // Split the progression into an array of chords
         const chords = progression.split(' ').filter(chord => chord.length > 0);
-        console.log("Progression chords:", chords);
+        console.log("Processing progression:", chords);
         
         // Create a transition matrix
         const transitions = {};
         
-        // First pass: count all unique transitions
-        const transitionCounts = new Map();
-        
+        // Create transitions for all chords except the last one
         for (let i = 0; i < chords.length - 1; i++) {
             const currentChord = chords[i];
             const nextChord = chords[i + 1];
-            const transitionKey = `${currentChord}->${nextChord}`;
             
             if (!transitions[currentChord]) {
                 transitions[currentChord] = {};
             }
             
-            // Only count each unique transition once
-            if (!transitionCounts.has(transitionKey)) {
-                transitionCounts.set(transitionKey, true);
-                transitions[currentChord][nextChord] = 1.0;
-            }
-            
+            transitions[currentChord][nextChord] = (transitions[currentChord][nextChord] || 0) + 1;
             console.log(`Added transition: ${currentChord} → ${nextChord}`);
         }
         
-        // Normalize probabilities for each chord
+        // Normalize probabilities
         for (const chord in transitions) {
-            const total = Object.values(transitions[chord]).reduce((sum, prob) => sum + prob, 0);
+            const total = Object.values(transitions[chord]).reduce((sum, count) => sum + count, 0);
             for (const nextChord in transitions[chord]) {
-                transitions[chord][nextChord] /= total;
+                transitions[chord][nextChord] = transitions[chord][nextChord] / total;
+                console.log(`Normalized ${chord} → ${nextChord}: ${transitions[chord][nextChord]}`);
             }
-            console.log(`Normalized transitions for ${chord}:`, transitions[chord]);
         }
         
         console.log("Final transition matrix:", transitions);
         return transitions;
     }
-
-    static DEFAULT_TRANSITIONS = {
-        'C':  {'G': 0.16, 'F': 0.16, 'Am': 0.16, 'Dm': 0.16, 'Em': 0.16, 'A♭': 0.05, 'Fm': 0.05, 'E': 0.05, 'C♯m': 0.05},
-        'G':  {'C': 0.16, 'D': 0.16, 'Em': 0.16, 'Am': 0.16, 'Bm': 0.16, 'E♭': 0.05, 'Cm': 0.05, 'B': 0.05, 'G♯m': 0.05},
-        'D':  {'G': 0.16, 'A': 0.16, 'Bm': 0.16, 'Em': 0.16, 'F♯m': 0.16, 'B♭': 0.05, 'Gm': 0.05, 'F♯': 0.05, 'D♯m': 0.05},
-        'A':  {'D': 0.16, 'E': 0.16, 'F♯m': 0.16, 'Bm': 0.16, 'C♯m': 0.16, 'F': 0.05, 'Dm': 0.05, 'D♭': 0.05, 'B♭m': 0.05},
-        'E':  {'A': 0.16, 'B': 0.16, 'C♯m': 0.16, 'F♯m': 0.16, 'G♯m': 0.16, 'C': 0.05, 'Am': 0.05, 'A♭': 0.05, 'Fm': 0.05},
-        'B':  {'E': 0.16, 'F♯': 0.16, 'G♯m': 0.16, 'C♯m': 0.16, 'D♯m': 0.16, 'G': 0.05, 'Em': 0.05, 'E♭': 0.05, 'Cm': 0.05},
-        'F♯': {'B': 0.16, 'D♭': 0.16, 'G♯m': 0.16, 'D♯m': 0.16, 'B♭m': 0.16, 'D': 0.05, 'Bm': 0.05, 'B♭': 0.05, 'Gm': 0.05},
-        'D♭': {'A♭': 0.16, 'B♭m': 0.16, 'F♯': 0.16, 'Fm': 0.16, 'D♯m': 0.16, 'A': 0.05, 'F♯m': 0.05, 'F': 0.05, 'Dm': 0.05},
-        'A♭': {'D♭': 0.16, 'E♭': 0.16, 'Fm': 0.16, 'B♭m': 0.16, 'Cm': 0.16, 'E': 0.05, 'C♯m': 0.05, 'C': 0.05, 'Am': 0.05},
-        'E♭': {'A♭': 0.16, 'B♭': 0.16, 'Cm': 0.16, 'Fm': 0.16, 'Gm': 0.16, 'B': 0.05, 'G♯m': 0.05, 'G': 0.05, 'Em': 0.05},
-        'B♭': {'E♭': 0.16, 'F': 0.16, 'Gm': 0.16, 'Cm': 0.16, 'Dm': 0.16, 'F♯': 0.05, 'D♯m': 0.05, 'D': 0.05, 'Bm': 0.05},
-        'F':  {'B♭': 0.16, 'C': 0.16, 'Dm': 0.16, 'Gm': 0.16, 'Am': 0.16, 'D♭': 0.05, 'B♭m': 0.05, 'A': 0.05, 'F♯m': 0.05},
-        'Am': {'Dm': 0.16, 'Em': 0.16, 'F': 0.16, 'G': 0.16, 'C': 0.16, 'A♭': 0.05, 'Fm': 0.05, 'E': 0.05, 'C♯m': 0.05},
-        'Em': {'Am': 0.16, 'Bm': 0.16, 'C': 0.16, 'D': 0.16, 'G': 0.16, 'E♭': 0.05, 'Cm': 0.05, 'B': 0.05, 'G♯m': 0.05},
-        'Bm': {'Em': 0.16, 'F♯m': 0.16, 'G': 0.16, 'A': 0.16, 'D': 0.16, 'B♭': 0.05, 'Gm': 0.05, 'F♯': 0.05, 'D♯m': 0.05},
-        'F♯m': {'Bm': 0.16, 'C♯m': 0.16, 'D': 0.16, 'E': 0.16, 'A': 0.16, 'F': 0.05, 'Dm': 0.05, 'D♭': 0.05, 'B♭m': 0.05},
-        'C♯m': {'F♯m': 0.16, 'G♯m': 0.16, 'A': 0.16, 'B': 0.16, 'E': 0.16, 'C': 0.05, 'Am': 0.05, 'A♭': 0.05, 'Fm': 0.05},
-        'G♯m': {'C♯m': 0.16, 'D♯m': 0.16, 'E': 0.16, 'F♯': 0.16, 'B': 0.16, 'G': 0.05, 'Em': 0.05, 'E♭': 0.05, 'Cm': 0.05},
-        'D♯m': {'G♯m': 0.16, 'B♭m': 0.16, 'B': 0.16, 'D♭': 0.16, 'F♯': 0.16, 'D': 0.05, 'Bm': 0.05, 'B♭': 0.05, 'Gm': 0.05},
-        'B♭m': {'D♯m': 0.16, 'Fm': 0.16, 'F♯': 0.16, 'A♭': 0.16, 'D♭': 0.16, 'A': 0.05, 'F♯': 0.05, 'F': 0.05, 'Dm': 0.05},
-        'Fm': {'B♭m': 0.16, 'Cm': 0.16, 'A♭': 0.16, 'E♭': 0.16, 'A♭': 0.16, 'E': 0.05, 'C♯m': 0.05, 'C': 0.05, 'Am': 0.05},
-        'Cm': {'Fm': 0.16, 'Gm': 0.16, 'E♭': 0.16, 'B♭': 0.16, 'E♭': 0.16, 'B': 0.05, 'G♯m': 0.05, 'G': 0.05, 'Em': 0.05},
-        'Gm': {'Cm': 0.16, 'Dm': 0.16, 'B♭': 0.16, 'F': 0.16, 'B♭': 0.16, 'F♯': 0.05, 'D♯m': 0.05, 'D': 0.05, 'Bm': 0.05},
-        'Dm': {'Gm': 0.16, 'Am': 0.16, 'F': 0.16, 'C': 0.16, 'F': 0.16, 'D♭': 0.05, 'B♭m': 0.05, 'A': 0.05, 'F♯m': 0.05}
-    };
 
     updateTransitionProbabilities(progression) {
         console.log("Updating transitions for progression:", progression);
