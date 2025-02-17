@@ -155,16 +155,30 @@ input[type="range"]::-moz-range-progress {
     border-radius: 4px;
 }
 .header {
-    text-align: center;
     color: #48A69D;
     padding: 2vh 0;
     margin-bottom: 1vh;
 }
 
+.header-content {
+    display: flex;
+    align-items: center;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    gap: 1rem;
+}
+
 .header h1 {
     margin: 0;
-    font-size: clamp(1.5rem, 4vw, 2.5rem); /* Responsive font size */
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
 }
+
+.material-symbols-outlined {
+    font-size: clamp(2rem, 5vw, 40px);
+    color: #48A69D;
+}
+
 .chord-selector {
     display: flex;
     align-items: center;
@@ -419,6 +433,27 @@ input[type="checkbox"]:checked:hover {
     .chord-node {
         font-size: 0.9em;
     }
+
+    .header-content {
+        padding: 0 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+
+    .material-symbols-outlined {
+        font-size: 1.8rem;
+    }
+
+    .random-controls {
+        flex-direction: row;
+    }
+    
+    .random-controls select,
+    .icon-button {
+        min-height: 36px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -493,4 +528,32 @@ button {
     -moz-appearance: none;
     appearance: none;
     border-radius: 4px;
+}
+
+.random-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.random-controls select {
+    width: auto;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
+
+.icon-button {
+    padding: 4px 8px;
+    min-height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-button .material-symbols-outlined {
+    font-size: 20px;
+    margin: 0;
+    color: white;
 }

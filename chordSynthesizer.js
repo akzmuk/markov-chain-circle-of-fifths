@@ -169,6 +169,15 @@ class ChordSynthesizer {
         strictProgressionToggle.addEventListener('change', (e) => {
             this.strictProgressionMode = e.target.checked;
         });
+
+        // Add new event binding for random progression
+        const randomBtn = document.getElementById('randomProgressionBtn');
+        randomBtn.addEventListener('click', () => {
+            const length = parseInt(document.getElementById('progressionLength').value);
+            const progression = this.generateRandomProgression(length);
+            document.getElementById('progressionInput').value = progression;
+            this.updateTransitionProbabilities(progression);
+        });
     }
 
     setupCircleOfFifths() {
@@ -551,6 +560,32 @@ class ChordSynthesizer {
         });
         
         this.updateUI();
+    }
+
+    generateRandomProgression(length) {
+        const allChords = [...this.CIRCLE_CHORDS, ...this.CIRCLE_MINORS];
+        let progression = [];
+        let currentChord = allChords[Math.floor(Math.random() * allChords.length)];
+        
+        for (let i = 0; i < length; i++) {
+            progression.push(currentChord);
+            
+            // Get possible next chords from transition matrix
+            const transitions = this.TRANSITIONS[currentChord];
+            const random = Math.random();
+            let sum = 0;
+            
+            // Select next chord based on transition probabilities
+            for (const [nextChord, probability] of Object.entries(transitions)) {
+                sum += probability;
+                if (random < sum) {
+                    currentChord = nextChord;
+                    break;
+                }
+            }
+        }
+        
+        return progression.join(' ');
     }
 }
 
